@@ -4,9 +4,9 @@ AnChain.AI  Team. 2020/10/1
 
 #### Background
 
-On Sep 20, 2020, the liquidity mining project DeFi [Soda.Finance](https://soda.finance/) was hacked by malicious actors, who subsequently liquidated over 400 ETH (around $160,000) from the Soda loan pool. In this blog, we will walk thru the hack incident, and show how we can apply formal verification to prevent. 
+On Sep 20, 2020, the liquidity mining project DeFi [Soda.Finance](https://soda.finance/) was hacked by malicious actors, who subsequently liquidated over 400 ETH (around $160,000) from the Soda loan pool. In this blog, we will walk thru the hack incident, and show how we can apply formal verification to prevent.
 
-<img src='./soda.png' style='zoom:50%'>
+<img src='./soda.png' style='zoom:30%'>
 
  Here are some screenshots of the hacking transactions:
 
@@ -157,21 +157,21 @@ The only difference between the buggy code and the fixed code is that ***maximum
 
 After running this script in terminal, the result is ***sat***, which is short for satisfactory meaning that there are solutions making ***loanTotal*** smaller than ***maximumLoan***. Therefore, the requirement check will fail under specific circumstances and the hackers now are not able to attack arbitrarily.
 
-The Python source code [here](soda_hack_z3.py) . 
+The Python source code [here](soda_hack_z3.py) .
 
 #### Conclusion
 
 Although formal verification is powerful and could mathematically prove the code correctness, this technique is limited due to several disadvantages.
 
-1. Efforts need to be made on modelling and translating the code. For complex smart contract business logics, this task might take days or weeks.
+1. Efforts need to be made on modeling and translating the code. For complex smart contract business logics, this task might take days or weeks.
 
-2. Expertise in formal verification is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular defi projects are not following some common patterns so no template is available to solve all defi security issue.
+2. Expertise in formal verification is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular DeFi projects are not following some common patterns so no template is available to solve all DeFi security issues.
 
 3. Real world formal verification application is still maturing in the blockchain security industry, and tools are limited.
 
-As of 2020, formal verification is not ready for prime time. AnChain.AI team recommends DeFi, DApp and smart contract develpment teams to engage with  blockchain security professionals that leverage static, dynamic, and statistical analysis to ensure known vulnerabilities are eliminated. 
+As of 2020, formal verification is not ready for prime time. AnChain.AI team recommends DeFi, DApp and smart contract development teams to engage with  blockchain security professionals that leverage static, dynamic, and statistical analysis to ensure known vulnerabilities are eliminated.
 
-With millions dollars of your community's crypto assets locked in the smart contracts, security audit is becoming even more essential. 
+With millions dollars of your community's crypto assets locked in the smart contracts, security audit is becoming even more essential.
 
 
 
@@ -181,4 +181,3 @@ With millions dollars of your community's crypto assets locked in the smart cont
 - Microsoft Research Z3 Tutorial: https://rise4fun.com/z3/tutorial
 - Microsoft Research Z3 Video Presentation: https://www.youtube.com/watch?v=wHSmAThRBHg&ab_channel=MicrosoftResearch
 - Soda Hack Report: https://weibo.com/5307267565/JlyJgiAz9?type=comment
-
