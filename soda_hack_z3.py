@@ -7,7 +7,7 @@ AnChain.AI 2020/10/1
 
 __author__ = 'Tianyi Zhang'
 __copyright__ = 'Copyright 2020, AnChain.AI'
-__credits__ = ['Tianyi Zhang', 'Tomo', 'Victor']
+__credits__ = ['Tianyi Zhang', 'Reviewer:Tomo', 'Reviewer:Victor']
 
 # to run this script, install Z3 first by running 'sudo pip3 install z3-solver'
 from z3 import *
