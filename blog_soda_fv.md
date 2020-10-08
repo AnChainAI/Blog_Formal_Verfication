@@ -6,7 +6,7 @@ AnChain.AI  Team. 2020/10/1
 
 On Sep 20, 2020, the liquidity mining project DeFi [Soda.Finance](https://soda.finance/) was hacked by malicious actors, who subsequently liquidated over 400 ETH (around $160,000) from the Soda loan pool. In this blog, we will walk thru the hack incident, and show how we can apply formal verification to prevent.
 
-<img src='./soda.png' style='zoom:30%'>
+<img src='./soda.png' width='50%'>
 
  Here are some screenshots of the hacking transactions:
 
