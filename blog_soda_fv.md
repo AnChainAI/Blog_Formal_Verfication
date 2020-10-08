@@ -6,13 +6,13 @@ AnChain.AI  Team. 2020/10/1
 
 On Sep 20, 2020, the liquidity mining project DeFi [Soda.Finance](https://soda.finance/) was hacked by malicious actors, who subsequently liquidated over 400 ETH (around $160,000) from the Soda loan pool. In this blog, we will walk thru the hack incident, and show how we can apply formal verification to prevent. 
 
-<img src='./soda.png' style='zoom:75%'>
+<img src='./soda.png' style='zoom:50%'>
 
  Here are some screenshots of the hacking transactions:
 
-<img src='./txn.png' style='zoom:75%'>
+<img src='./txn.png' style='zoom:50%'>
 
-<img src='./internal.png' style='zoom:75%'>
+<img src='./internal.png' style='zoom:50%'>
 
 To everyone's surprise, the loophole exploited by the hackers was simply a mistakenly written variable in the [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol) smart contract. Let's dive in and see how a seemingly tiny issue caused this huge loss.
 
@@ -50,7 +50,7 @@ This loophole is completely a code logic design issue, and no static scanners is
 
 The formal verification library Z3 developed by [Microsoft Research](https://rise4fun.com/z3/tutorial) is a powerful tool for solving this type of code logic, and the following proof will be conducted with [Z3Py](https://github.com/Z3Prover/z3/wiki/Using-Z3Py-on-Windows), a Python binding package of Z3. Here is a slide screenshot from Microsoft Research about the Z3 workflow:
 
-<img src='./youtube.png' style='zoom:75%'>
+<img src='./youtube.png' style='zoom:30%'>
 
 
 
@@ -157,19 +157,21 @@ The only difference between the buggy code and the fixed code is that ***maximum
 
 After running this script in terminal, the result is ***sat***, which is short for satisfactory meaning that there are solutions making ***loanTotal*** smaller than ***maximumLoan***. Therefore, the requirement check will fail under specific circumstances and the hackers now are not able to attack arbitrarily.
 
-
+The Python source code [here](soda_hack_z3.py) . 
 
 #### Conclusion
 
 Although formal verification is powerful and could mathematically prove the code correctness, this technique is limited due to several disadvantages.
 
-First, efforts need to be made on modelling and translating the code. If the code design is quite complex, then this task might take days or weeks to finish.
+1. Efforts need to be made on modelling and translating the code. For complex smart contract business logics, this task might take days or weeks.
 
-Second, expertise in this area is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular defi projects are not following some common patterns so no template is available to solve all defi security issue.
+2. Expertise in formal verification is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular defi projects are not following some common patterns so no template is available to solve all defi security issue.
 
-Third, the application of formal verification is still maturing in security industry and tools are limited.
+3. Real world formal verification application is still maturing in the blockchain security industry, and tools are limited.
 
-In a word, formal verification is limited and AnChain.AI does not recommend relying too much on formal verification to secure your code.
+As of 2020, formal verification is not ready for prime time. AnChain.AI team recommends DeFi, DApp and smart contract develpment teams to engage with  blockchain security professionals that leverage static, dynamic, and statistical analysis to ensure known vulnerabilities are eliminated. 
+
+With millions dollars of your community's crypto assets locked in the smart contracts, security audit is becoming even more essential. 
 
 
 
