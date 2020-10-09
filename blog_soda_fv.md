@@ -1,4 +1,4 @@
-# Soda Finance Hack: Can Formal Verification Prevent It? (Code Included)
+# Soda Finance Hack: Could Formal Verification Have Prevented It? (Code Included)
 
 AnChain.AI  Team. 2020/10/1
 
@@ -6,13 +6,13 @@ AnChain.AI  Team. 2020/10/1
 
 On Sep 20, 2020, the liquidity mining project DeFi [Soda.Finance](https://soda.finance/) was hacked by malicious actors, who subsequently liquidated over 400 ETH (around $160,000) from the Soda loan pool. In this blog, we will walk thru the hack incident, and show how we can apply formal verification to prevent.
 
-<img src='./soda.png' style='zoom:50%'>
+<img src='./soda.png' width='70%'>
 
  Here are some screenshots of the hacking transactions:
 
-<img src='./txn.png' style='zoom:50%'>
+<img src='./txn.png' width='70%'>
 
-<img src='./internal.png' style='zoom:50%'>
+<img src='./internal.png' width='70%'>
 
 To everyone's surprise, the loophole exploited by the hackers was simply a mistakenly written variable in the [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol) smart contract. Let's dive in and see how a seemingly tiny issue caused this huge loss.
 
@@ -20,7 +20,7 @@ To everyone's surprise, the loophole exploited by the hackers was simply a mista
 
 #### Where Is The Bug ?!
 
-The buggy variable was ***amount*** in line 193 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol). According to Soda.Finance blog, this variable should be replaced by ***lockedAmount***, which is exactly how the Soda team fixed this bug in line 300 of [WETHCalculatorFixed.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculatorFixed.sol)
+The buggy variable was ***amount*** in line 193 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol). According to the Soda.Finance blog, this variable should be replaced by ***lockedAmount***, which is exactly how the Soda team fixed this bug in line 300 of [WETHCalculatorFixed.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculatorFixed.sol)
 
 ```mathematica
 uint256 maximumLoan = loanInfo[_loanId].amount.mul(loanInfo[_loanId].maximumLTV).div(LTV_BASE);
@@ -34,7 +34,7 @@ uint256 maximumLoan = loanInfoFixed[_loanId].lockedAmount.mul(loanInfoFixed[_loa
 
 <center><b><i>WETHCalculatorFixed.sol</i></b></center>
 
-The consequence of this mistake was that for whatever input, the following requirement check in line 196 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol) would pass so everyone including hackers could call the ***collectDebt()*** function to liquidate WETH stored in the pool.
+The consequence of this mistake was that for whatever input, the following requirement check in line 196 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol) would pass, enabling everyone, including hackers to call the ***collectDebt()*** function to liquidate WETH stored in the pool.
 
 ```mathematica
 require(loanTotal >= maximumLoan, "collectDebt: >=");
@@ -46,17 +46,17 @@ require(loanTotal >= maximumLoan, "collectDebt: >=");
 
 #### Formal Verification and Z3
 
-This loophole is completely a code logic design issue, and no static scanners is available for detecting such bugs. However, the formal verification technique could be applied here for code logic detection. According to [Wikipedia](https://en.wikipedia.org/wiki/Formal_verification), formal verification is a technique to prove or disprove the correctness of intended algorithms with a set of specifications. Back to this loophole, the formal verification could prove that all valid inputs bypass the requirement in line 196 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol).
+This loophole is completely a code logic design issue, and no static scanners is available for detecting such bugs. However, the formal verification technique could be applied here for code logic detection. According to [Wikipedia](https://en.wikipedia.org/wiki/Formal_verification), formal verification is a technique to prove or disprove the correctness of intended algorithms with a set of specifications. In the case of this loophole, formal verification could prove that all valid inputs bypass the requirement in line 196 of [WETHCalculator.sol](https://github.com/soda-finance/soda-contracts/blob/master/contracts/calculators/WETHCalculator.sol).
 
 The formal verification library Z3 developed by [Microsoft Research](https://rise4fun.com/z3/tutorial) is a powerful tool for solving this type of code logic, and the following proof will be conducted with [Z3Py](https://github.com/Z3Prover/z3/wiki/Using-Z3Py-on-Windows), a Python binding package of Z3. Here is a slide screenshot from Microsoft Research about the Z3 workflow:
 
-<img src='./youtube.png' style='zoom:30%'>
+<img src='./youtube.png'  width='70%'>
 
 
 
 #### Formulating The DeFi Problem
 
-In order to convert the code into a formal verification topic, the first thing is to formulate the code into mathematical conditions.
+In order to convert the code into a formal verification topic, the first step is to formulate the code into mathematical conditions.
 
 - Variable ***amount*** is an unsigned integer, so ***amount*** is integer-typed and non-negative.
 
@@ -136,7 +136,7 @@ The variable ***s*** is a Z3 solver object, and the next two lines are contraint
 
 The final step is to add the negation version of the requirement to check if there is a solution.
 
-After running this script in terminal, the result is ***unsat***, which is short for unsatisfactory meaning that no solution is available given these constraints. Therefore, it is proved that the requirement will always pass.
+After running this script in the unix terminal, the result is ***unsat***, which is short for unsatisfactory meaning that no solution is available given these constraints. Therefore, it is proved that the requirement will always pass.
 
 Moreover, it is also possible to check the fixed version requirement and see if it will fail given constraints:
 
@@ -161,17 +161,17 @@ The Python source code [here](soda_hack_z3.py) .
 
 #### Conclusion
 
-Although formal verification is powerful and could mathematically prove the code correctness, this technique is limited due to several disadvantages.
+Although formal verification is powerful and could mathematically prove a given piece of code's correctness, this technique is limited due to several disadvantages.
 
 1. Efforts need to be made on modeling and translating the code. For complex smart contract business logics, this task might take days or weeks.
 
-2. Expertise in formal verification is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular DeFi projects are not following some common patterns so no template is available to solve all DeFi security issues.
+2. Expertise in formal verification is necessary to construct the proof body. If the code is well-defined, developers would be able to build templates for a series of similar problems. However, current popular DeFi projects are not following common patterns so no template is available to address all DeFi security issues.
 
 3. Real world formal verification application is still maturing in the blockchain security industry, and tools are limited.
 
-As of 2020, formal verification is not ready for prime time. AnChain.AI team recommends DeFi, DApp and smart contract development teams to engage with  blockchain security professionals that leverage static, dynamic, and statistical analysis to ensure known vulnerabilities are eliminated.
+As of 2020, formal verification is not yet ready for prime time. The AnChain.AI team recommends DeFi, DApp and smart contract development teams to engage with  blockchain security professionals that leverage static, dynamic, and statistical analysis to ensure known vulnerabilities are eliminated.
 
-With millions dollars of your community's crypto assets locked in the smart contracts, security audit is becoming even more essential.
+With millions of dollars of your community's crypto assets locked in these DeFi smart contracts like Soda.Finance, security audit has become even more essential than ever before.
 
 
 
